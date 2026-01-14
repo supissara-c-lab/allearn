@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>บัญชีของฉัน | Allearn</title>
+
+<link rel="stylesheet" href="Allearn_header.css">
+<link rel="stylesheet" href="Allearn_speech.css">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+  font-family:"Prompt", sans-serif;
+  background:#f5f7fa;
+  margin:0;
+}
+
+/* ===== PROFILE ===== */
+.profile-detail{
+  display:flex;
+  gap:50px;
+  padding:60px 80px;
+  max-width:1100px;
+  margin:40px auto;
+  background:#fff;
+  border-radius:30px;
+}
+
+.profile-left{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.profile-left img{
+  width:240px;
+  height:300px;
+  object-fit:cover;
+  border-radius:18px;
+}
+
+.logout-btn{
+  margin-top:20px;
+  padding:10px 28px;
+  border:none;
+  border-radius:22px;
+  background:#ff6b6b;
+  color:#fff;
+  cursor:pointer;
+}
+
+.info{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.tag-row{
+  display:flex;
+  gap:10px;
+  margin-top:8px;
+}
+
+.tag{
+  padding:8px 18px;
+  border-radius:999px;
+  font-size:14px;
+}
+
+.blue{ background:#2f6bff; color:#fff; }
+.yellow{ background:#f7d046; color:#000; }
+
+/* ===== FILE ===== */
+.file-area{
+  max-width:1100px;
+  margin:0 auto 80px;
+  padding:0 80px;
+}
+
+.file-label{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  margin:30px 0 18px;
+}
+
+.file-label span{
+  padding:8px 20px;
+  border-radius:20px;
+  color:white;
+  background:#4b56c0;
+}
+
+.upload-btn{
+  padding:8px 22px;
+  border-radius:20px;
+  border:none;
+  background:#ddd;
+  cursor:pointer;
+}
+
+.file-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:26px;
+}
+
+.file-card{
+  background:white;
+  border-radius:18px;
+  padding:10px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.12);
+  text-decoration:none;
+  color:#000;
+}
+</style>
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<section class="profile-detail">
+
+  <div class="profile-left">
+    <img src="P01.jpg">
+    <button class="logout-btn">Log out</button>
+  </div>
+
+  <div class="info">
+    <div id="speechBox"></div>
+
+    <strong>ชีทที่เพิ่มโดยฉัน</strong>
+    <p id="sheetCount">0</p>
+  </div>
+
+</section>
+
+<div class="file-area">
+  <div class="file-label">
+    <span>ชีทที่เพิ่มโดยฉัน</span>
+    <a href="Allearn_uploadui.html">
+      <button class="upload-btn">Upload</button>
+    </a>
+  </div>
+
+  <div class="file-grid" id="mySheetGrid"></div>
+</div>
+
+<script>
+/* ===== HEADER ===== */
+fetch("Allearn_header.html")
+  .then(r=>r.text())
+  .then(t=>document.getElementById("header").innerHTML=t)
+
+/* ===== SUPABASE ===== */
+const supabaseClient = supabase.createClient(
+  "https://ctfrqwehpvpldtiojedb.supabase.co",
+  "sb_publishable_YHDQnG7VsNgb4O4i6MPN5g_lgU5eOGI"
+)
+
+const IDACC = "f2327b71-2cc2-45ac-9394-f4a8484dde89"
+
+/* ===== LOAD SPEECH FIRST ===== */
+fetch("Allearn_speech-profile.html")
+  .then(r=>r.text())
+  .then(t=>{
+    document.getElementById("speechBox").innerHTML = t
+    loadUser()
+    loadMySheets()
+  })
+
+/* ===== LOAD USER ===== */
+async function loadUser(){
+  const userNameEl = document.getElementById("userName")
+  const eduTagsEl = document.getElementById("eduTags")
+
+  if(!userNameEl || !eduTagsEl) return
+
+  const { data, error } = await supabaseClient
+    .from("Account")
+    .select(`
+      name,
+      surname,
+      year,
+      Major ( major_name )
+    `)
+    .eq("idacc", IDACC)
+    .single()
+
+  if(error){
+    console.error(error)
+    return
+  }
+
+  userNameEl.textContent = `${data.name} ${data.surname}`
+
+  eduTagsEl.innerHTML = `
+    <span class="tag blue">${data.Major?.major_name || "-"}</span>
+    <span class="tag yellow">ชั้นปีที่ ${data.year || "-"}</span>
+  `
+}
+
+/* ===== LOAD SHEETS ===== */
+async function loadMySheets(){
+  const grid = document.getElementById("mySheetGrid")
+  const sheetCount = document.getElementById("sheetCount")
+
+  const { data } = await supabaseClient
+    .from("Sheet")
+    .select("idsheet, sheet_name")
+    .eq("idacc", IDACC)
+
+  sheetCount.textContent = data.length
+  grid.innerHTML = ""
+
+  data.forEach(s=>{
+    grid.innerHTML += `
+      <a class="file-card" href="Allearn_content.html?idsheet=${s.idsheet}">
+        <p>${s.sheet_name}</p>
+      </a>
+    `
+  })
+}
+</script>
+
+</body>
+</html>

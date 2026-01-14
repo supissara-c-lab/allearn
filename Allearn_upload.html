@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Upload Sheet (Logic)</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+<h2>Upload Sheet</h2>
+
+<p>
+  PDF File:
+  <input type="file" id="pdfFile" accept="application/pdf">
+</p>
+
+<p>
+  ชื่อชีท:
+  <input type="text" id="sheetName">
+</p>
+
+<p>
+  คำอธิบายชีท:
+  <br>
+  <textarea id="sheetDesc" rows="4" cols="50"
+    placeholder="อธิบายเนื้อหาโดยย่อ"></textarea>
+</p>
+
+<p>
+  วิชา:
+  <select id="subjectSelect">
+    <option value="">-- เลือกวิชา --</option>
+  </select>
+</p>
+
+<p>
+  อาจารย์:
+  <select id="professorSelect">
+    <option value="">-- เลือกอาจารย์ --</option>
+  </select>
+</p>
+
+<button id="uploadBtn">UPLOAD</button>
+
+<script>
+/* ================= SUPABASE ================= */
+const supabaseClient = supabase.createClient(
+  "https://ctfrqwehpvpldtiojedb.supabase.co",
+  "sb_publishable_YHDQnG7VsNgb4O4i6MPN5g_lgU5eOGI"
+)
+
+/* ================= FIXED ================= */
+const IDACC = "f2327b71-2cc2-45ac-9394-f4a8484dde89"
+const IDMAJOR = "M01"
+
+/* ================= ELEMENT ================= */
+const subjectSelect = document.getElementById("subjectSelect")
+const professorSelect = document.getElementById("professorSelect")
+const uploadBtn = document.getElementById("uploadBtn")
+
+/* ================= LOAD SUBJECT ================= */
+async function loadSubjects() {
+  const { data, error } = await supabaseClient
+    .from("Subject")
+    .select("idsubject, subject_name")
+    .order("subject_name")
+
+  if (error) {
+    alert("โหลดวิชาไม่สำเร็จ")
+    console.error(error)
+    return
+  }
+
+  data.forEach(s => {
+    const opt = document.createElement("option")
+    opt.value = s.idsubject
+    opt.textContent = s.subject_name
+    subjectSelect.appendChild(opt)
+  })
+}
+loadSubjects()
+
+/* ================= LOAD PROFESSOR BY SUBJECT ================= */
+subjectSelect.onchange = async () => {
+  const idsubject = subjectSelect.value
+  professorSelect.innerHTML = `<option value="">-- เลือกอาจารย์ --</option>`
+
+  if (!idsubject) return
+
+  const { data, error } = await supabaseClient
+    .from("professor_subject")
+    .select("idprofessor, Professor(name, surname)")
+    .eq("idsubject", idsubject)
+
+  if (error) {
+    alert("โหลดอาจารย์ไม่สำเร็จ")
+    console.error(error)
+    return
+  }
+
+  data.forEach(p => {
+    const opt = document.createElement("option")
+    opt.value = p.idprofessor
+    opt.textContent = `${p.Professor.name} ${p.Professor.surname}`
+    professorSelect.appendChild(opt)
+  })
+}
+
+/* ================= UPLOAD ================= */
+uploadBtn.onclick = async () => {
+  const file = document.getElementById("pdfFile").files[0]
+  const sheetName = document.getElementById("sheetName").value.trim()
+  const sheetDesc = document.getElementById("sheetDesc").value.trim()
+  const idsubject = subjectSelect.value
+  const idprofessor = professorSelect.value
+
+  if (!file || !sheetName || !idsubject || !idprofessor) {
+    alert("กรุณากรอกข้อมูลให้ครบ")
+    return
+  }
+
+  if (file.type !== "application/pdf") {
+    alert("รองรับเฉพาะ PDF เท่านั้น")
+    return
+  }
+
+  uploadBtn.disabled = true
+  uploadBtn.textContent = "Uploading..."
+
+  /* ===== SAFE FILE NAME ===== */
+  const safeFileName = file.name
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_.-]/g, "")
+
+  const filePath = `sheets/${IDACC}/${Date.now()}_${safeFileName}`
+
+  /* ===== UPLOAD PDF ===== */
+  const { error: uploadError } = await supabaseClient.storage
+    .from("sheet-pdf")
+    .upload(filePath, file, {
+      contentType: "application/pdf",
+      upsert: false
+    })
+
+  if (uploadError) {
+    console.error(uploadError)
+    alert(uploadError.message)
+    uploadBtn.disabled = false
+    uploadBtn.textContent = "UPLOAD"
+    return
+  }
+
+  /* ===== INSERT DB ===== */
+  const { error: insertError } = await supabaseClient
+    .from("Sheet")
+    .insert({
+      sheet_name: sheetName,
+      description: sheetDesc,
+      file_path: filePath,
+      idacc: IDACC,
+      idsubject: idsubject,
+      idmajor: IDMAJOR,
+      idprofessor: idprofessor
+    })
+
+  if (insertError) {
+    console.error(insertError)
+    alert(insertError.message)
+    uploadBtn.disabled = false
+    uploadBtn.textContent = "UPLOAD"
+    return
+  }
+
+  alert("อัปโหลดสำเร็จ 🎉")
+  uploadBtn.disabled = false
+  uploadBtn.textContent = "UPLOAD"
+}
+</script>
+
+</body>
+</html>
