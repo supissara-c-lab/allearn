@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Allearn - Login & Signup</title>
+    <style>
+        /* --- CSS Design (ธีม Allearn) --- */
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #b1c6e1;
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, #8fa9c9 39px, #8fa9c9 41px);
+            font-family: 'Times New Roman', 'Sarabun', serif;
+        }
+
+        .login-container {
+            background-color: #fff9e6;
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            box-sizing: border-box;
+            margin: 20px;
+        }
+
+        .logo { width: 100px; margin-bottom: 20px; }
+
+        h2 { color: #4a7599; margin-bottom: 25px; font-size: 28px; }
+
+        .form-group { text-align: left; margin-bottom: 15px; }
+
+        label {
+            display: block;
+            color: #4a7599;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background-color: white;
+            box-sizing: border-box;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus { border-color: #4a7599; }
+
+        .login-btn {
+            background-color: #f0706a;
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover { background-color: #d95d57; }
+
+        .link-text {
+            display: block;
+            margin-top: 20px;
+            color: #4a7599;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <img src="logolearn.png" alt="Allearn Logo" class="logo">
+
+        <div id="loginBox">
+            <h2>เข้าสู่ระบบ</h2>
+            <div class="form-group">
+                <label>Username (Email)</label>
+                <input id="loginEmail" type="email" placeholder="example@email.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input id="loginPassword" type="password" placeholder="******">
+            </div>
+            <button class="login-btn" onclick="login()">LOGIN</button>
+            <span class="link-text" onclick="showSignup()">ยังไม่มีบัญชี? สมัครสมาชิก</span>
+        </div>
+
+        <div id="signupBox" style="display:none">
+            <h2>สมัครสมาชิก</h2>
+            <div class="form-group">
+                <label>Email</label>
+                <input id="email" type="email" placeholder="email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input id="password" type="password" placeholder="รหัสผ่าน">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group">
+                    <label>ชื่อ</label>
+                    <input id="name" placeholder="ชื่อ">
+                </div>
+                <div class="form-group">
+                    <label>นามสกุล</label>
+                    <input id="surname" placeholder="นามสกุล">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>สาขาวิชา</label>
+                <select id="idmajor">
+                    <option value="">-- เลือกสาขา --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>ชั้นปี</label>
+                <select id="idyear">
+                    <option value="">-- เลือกชั้นปี --</option>
+                </select>
+            </div>
+            <button class="login-btn" onclick="signUp()">SIGN UP</button>
+            <span class="link-text" onclick="showLogin()">กลับไปหน้า Login</span>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseClient = supabase.createClient(
+            'https://ctfrqwehpvpldtiojedb.supabase.co',
+            'sb_publishable_YHDQnG7VsNgb4O4i6MPN5g_lgU5eOGI'
+        )
+
+        const loginBox = document.getElementById('loginBox');
+        const signupBox = document.getElementById('signupBox');
+
+        function showSignup() {
+            loginBox.style.display = "none";
+            signupBox.style.display = "block";
+        }
+
+        function showLogin() {
+            signupBox.style.display = "none";
+            loginBox.style.display = "block";
+        }
+
+        // โหลดข้อมูล Dropdown จาก Supabase
+        async function loadDropdowns() {
+            const { data: majors } = await supabaseClient.from('Major').select('idmajor, major_name').order('major_name');
+            majors?.forEach(m => {
+                document.getElementById('idmajor').innerHTML += `<option value="${m.idmajor}">${m.major_name}</option>`;
+            });
+
+            const { data: years } = await supabaseClient.from('Year').select('idyear, year').order('idyear');
+            years?.forEach(y => {
+                document.getElementById('idyear').innerHTML += `<option value="${y.idyear}">${y.year}</option>`;
+            });
+        }
+        loadDropdowns();
+
+        // ฟังก์ชัน LOGIN
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!email || !password) {
+                alert("กรุณากรอก email และ password");
+                return;
+            }
+
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) { alert(error.message); return; }
+
+            alert("เข้าสู่ระบบสำเร็จ 🎉");
+            // window.location.href = "dashboard.html"; // เปลี่ยนหน้าหลัง login
+        }
+
+        // ฟังก์ชัน SIGN UP
+        async function signUp() {
+            const emailVal = document.getElementById('email').value.trim();
+            const passVal = document.getElementById('password').value.trim();
+            const nameVal = document.getElementById('name').value.trim();
+            const surnameVal = document.getElementById('surname').value.trim();
+            const majorVal = document.getElementById('idmajor').value;
+            const yearVal = document.getElementById('idyear').value;
+
+            if (!emailVal || !passVal || !nameVal || !surnameVal || !majorVal || !yearVal) {
+                alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+                return;
+            }
+
+            const { data, error } = await supabaseClient.auth.signUp({ email: emailVal, password: passVal });
+            if (error) { alert(error.message); return; }
+
+            const userId = data.user.id;
+            const { error: dbError } = await supabaseClient
+                .from('Account')
+                .insert({
+                    idacc: userId,
+                    name: nameVal,
+                    surname: surnameVal,
+                    idmajor: majorVal,
+                    idyear: yearVal
+                });
+
+            if (dbError) { alert(dbError.message); return; }
+
+            alert("สมัครสมาชิกสำเร็จ 🎉 กรุณาตรวจสอบ Email เพื่อยืนยัน (ถ้ามี)");
+            showLogin();
+        }
+    </script>
+</body>
+</html>

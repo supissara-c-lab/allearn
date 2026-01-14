@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Professor Profile</title>
+
+<link rel="stylesheet" href="Allearn_header.css">
+<link rel="stylesheet" href="Allearn_speech.css">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+body{
+  font-family:"Prompt", sans-serif;
+  background:#f5f7fa;
+  margin:0;
+}
+
+/* ===== PROFILE ===== */
+.professor-detail{
+  display:flex;
+  gap:40px;
+  padding:60px 80px;
+  background:#fff;
+}
+
+.professor-detail img{
+  width:240px;
+  height:300px;
+  object-fit:cover;
+  border-radius:18px;
+  background:#eee;
+}
+
+.info h4{
+  margin-top:18px;
+  margin-bottom:6px;
+}
+
+.tag{
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:13px;
+  display:inline-block;
+  margin:4px 6px 4px 0;
+}
+
+.blue{ background:#2f6bff; color:#fff }
+.yellow{ background:#f7d046; color:#000 }
+
+/* ===== OTHER PROFESSORS ===== */
+.professor-section{
+  padding:50px 60px;
+  background:#f5f7fa;
+}
+
+.professor-title{
+  text-align:center;
+  font-size:24px;
+  margin-bottom:25px;
+}
+
+.professor-scroll{
+  display:flex;
+  gap:20px;
+  overflow-x:auto;
+  padding-bottom:15px;
+}
+
+.professor-scroll::-webkit-scrollbar{ display:none }
+
+.professor-card{
+  min-width:200px;
+  background:#fff;
+  border-radius:16px;
+  padding:10px;
+  text-align:center;
+  box-shadow:0 5px 15px rgba(0,0,0,.15);
+  transition:.3s;
+}
+
+.professor-card:hover{
+  transform:translateY(-6px) scale(1.03);
+}
+
+.professor-card img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  border-radius:12px;
+}
+
+.professor-card h3{
+  font-size:14px;
+  margin-top:10px;
+}
+
+.professor-link{
+  text-decoration:none;
+  color:inherit;
+}
+</style>
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<section class="professor-detail">
+
+  <img id="profileImg" src="img/professor-default.jpg">
+
+  <div class="info">
+
+    <!-- speech component -->
+    <div id="speechBox"></div>
+
+    <h4>อาจารย์ประจำสาขา</h4>
+    <span class="tag blue" id="major"></span>
+
+    <h4>อาจารย์ประจำวิชา</h4>
+    <div id="subjects"></div>
+
+  </div>
+</section>
+
+<section class="professor-section">
+  <h2 class="professor-title">อาจารย์ท่านอื่นในคณะ</h2>
+  <div class="professor-scroll" id="otherProfessorScroll"></div>
+</section>
+
+<script>
+/* ===== LOAD HEADER ===== */
+fetch("Allearn_header.html")
+  .then(r=>r.text())
+  .then(t=>document.getElementById("header").innerHTML=t)
+
+/* ===== LOAD SPEECH ===== */
+fetch("Allearn_speech-professor.html")
+  .then(r=>r.text())
+  .then(t=>{
+    document.getElementById("speechBox").innerHTML = t
+    loadProfessor()
+  })
+
+/* ===== SUPABASE ===== */
+const supabaseClient = supabase.createClient(
+  "https://ctfrqwehpvpldtiojedb.supabase.co",
+  "sb_publishable_YHDQnG7VsNgb4O4i6MPN5g_lgU5eOGI"
+)
+
+const idprofessor = new URLSearchParams(window.location.search).get("id")
+
+/* ===== LOAD PROFESSOR ===== */
+async function loadProfessor(){
+
+  if(!idprofessor){
+    alert("ไม่พบ idprofessor")
+    return
+  }
+
+  const nameTH = document.getElementById("nameTH")
+  const nameEN = document.getElementById("nameEN")
+  const email  = document.getElementById("email")
+  const major  = document.getElementById("major")
+  const profileImg = document.getElementById("profileImg")
+  const subjects = document.getElementById("subjects")
+
+  const { data:prof, error } = await supabaseClient
+    .from("Professor")
+    .select(`
+      idprofessor,
+      name,
+      surname,
+      Eng_name,
+      professor_email,
+      img_professor,
+      Major ( major_name )
+    `)
+    .eq("idprofessor", idprofessor)
+    .single()
+
+  if(error){
+    alert(error.message)
+    return
+  }
+
+  nameTH.textContent = `${prof.name} ${prof.surname}`
+  nameEN.textContent = prof.Eng_name || ""
+  email.textContent  = "Email: " + prof.professor_email
+  major.textContent  = prof.Major?.major_name || "-"
+  profileImg.src    = prof.img_professor || "img/professor-default.jpg"
+  profileImg.onerror = ()=>profileImg.src="img/professor-default.jpg"
+
+  const { data:subs } = await supabaseClient
+    .from("professor_subject")
+    .select(`Subject(subject_name)`)
+    .eq("idprofessor", idprofessor)
+
+  subjects.innerHTML = ""
+  subs.forEach(s=>{
+    subjects.innerHTML += `<span class="tag yellow">${s.Subject.subject_name}</span>`
+  })
+}
+
+/* ===== OTHER PROFESSORS ===== */
+async function loadOtherProfessors(){
+  const box = document.getElementById("otherProfessorScroll")
+
+  const { data } = await supabaseClient
+    .from("Professor")
+    .select("idprofessor, name, surname, img_professor")
+    .neq("idprofessor", idprofessor)
+
+  box.innerHTML = ""
+  data.forEach(p=>{
+    box.innerHTML += `
+      <a class="professor-link" href="Allearn_professor.html?id=${p.idprofessor}">
+        <div class="professor-card">
+          <img src="${p.img_professor || 'img/professor-default.jpg'}"
+               onerror="this.src='img/professor-default.jpg'">
+          <h3>${p.name} ${p.surname}</h3>
+        </div>
+      </a>`
+  })
+}
+
+loadOtherProfessors()
+</script>
+
+</body>
+</html>

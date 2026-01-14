@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <link rel="stylesheet" href="Allearn_header.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Allearn - รวมกันเรียนรู้</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Prompt", sans-serif;
+            background-color: #b1c6e1;
+            background-image: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 39px,
+                #8fa9c9 39px,
+                #8fa9c9 41px
+            );
+            color: #333;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            display: flex;
+            padding: 80px 40px;
+            justify-content: center;
+            align-items: center;
+            max-width: 1200px;
+            margin: auto;
+            gap: 50px;
+        }
+
+        .hero-content-box {
+            background-color: #fff9e6;
+            padding: 50px;
+            border-radius: 40px;
+            width: 50%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .hero-content-box h1 {
+            font-size: 42px;
+            color: #1f3c88;
+        }
+
+        .hero-content-box p {
+            font-size: 18px;
+            color: #4a7599;
+        }
+
+        .hero-img-only {
+            width: 40%;
+        }
+
+        .hero-img-only img {
+            width: 100%;
+            border-radius: 30px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+        }
+
+        .btn-yellow {
+            display: inline-block;
+            padding: 15px 35px;
+            background: #ffeb3b;
+            border-radius: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+
+        /* ===== MENU ===== */
+        .menu-container {
+            display: flex;
+            justify-content: center;
+            margin-top: -30px;
+            margin-bottom: 100px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .menu {
+            display: flex;
+            background: #4a7599;
+            padding: 14px 40px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        }
+
+        .menu span {
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== SHEETLY STYLE CARDS ===== */
+        .sheet-section {
+            max-width: 1200px;
+            margin: auto;
+            padding-bottom: 80px;
+        }
+
+        .sheet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .sheet-card {
+            background: #ffffff;
+            border-radius: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .sheet-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .sheet-thumb {
+            height: 180px;
+            background: #dde7f5;
+        }
+
+        .sheet-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sheet-body {
+            padding: 18px;
+        }
+
+        .sheet-body h3 {
+            font-size: 17px;
+            margin: 0 0 8px;
+            color: #1f3c88;
+        }
+
+        .sheet-tag {
+            display: inline-block;
+            background: #4f7ea3;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .sheet-meta {
+            font-size: 13px;
+            color: #777;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        /* ===== WHITE CONTENT ===== */
+        .content-white {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 100px 20px 60px;
+            border-radius: 60px 60px 0 0;
+        }
+
+        .professor-section {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .professor-title {
+            text-align: center;
+            color: #1f3c88;
+            
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .professor-scroll {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 10px;
+        }
+
+        .professor-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .professor-card {
+            min-width: 220px;
+            background: white;
+            border-radius: 25px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .professor-card img {
+            width: 100%;
+            border-radius: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+            .hero-content-box,
+            .hero-img-only {
+                width: 100%;
+            }
+        }
+
+        .footer {
+    background: #000000;
+    color: #fff;
+    padding: 60px 40px;
+}
+
+.footer h2 {
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+.footer p {
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+    </style>
+</head>
+
+<body>
+
+<div id="header"></div>
+<script>
+fetch("Allearn_header.html")
+.then(res => res.text())
+.then(data => document.getElementById("header").innerHTML = data)
+</script>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content-box">
+        <h1>เพื่อนยามยากที่จะพาเรา<br>เรียนเข้าใจทุกบทเรียน</h1>
+        <p>
+            แหล่งรวมชีทสรุปสำหรับวิชาต่าง ๆ ภายในคณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร 
+            สำหรับการติวสอบและการทบทวนในรายวิชานั้น ๆ
+        </p>
+        <a href="Allearn_login.html" class="btn-yellow">ยังไม่มีบัญชีใช่หรือไม่</a>
+    </div>
+    <div class="hero-img-only">
+        <img src="pepstudy.jpg">
+    </div>
+</section>
+
+<!-- PROFESSOR -->
+<div class="content-white">
+<h2 class="professor-title">ชีทยอดนิยมคณะวิทยาศาสตร์และเทคโนโลยี</h2>
+
+<!-- SHEETLY STYLE SHEETS -->
+<section class="sheet-section">
+    <div class="sheet-grid">
+
+        <!-- Sheet 1 -->
+        <div class="sheet-card">
+            <div class="sheet-thumb"><img src="preview1.png"></div>
+            <div class="sheet-body">
+                <span class="sheet-tag">HCI</span>
+                <h3>สรุป Human Computer Interaction</h3>
+                <div class="sheet-meta">
+                    <span>👁 1.2k</span>
+                    <span>⭐ 4.8</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sheet 2 -->
+        <div class="sheet-card">
+            <div class="sheet-thumb"><img src="preview2.png"></div>
+            <div class="sheet-body">
+                <span class="sheet-tag">CAL</span>
+                <h3>แคลคูลัส สำหรับสอบกลางภาค</h3>
+                <div class="sheet-meta">
+                    <span>👁 980</span>
+                    <span>⭐ 4.6</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sheet 3 -->
+        <div class="sheet-card">
+            <div class="sheet-thumb"><img src="preview3.png"></div>
+            <div class="sheet-body">
+                <span class="sheet-tag">DATA</span>
+                <h3>Data Science ฉบับเข้าใจง่าย</h3>
+                <div class="sheet-meta">
+                    <span>👁 2.1k</span>
+                    <span>⭐ 4.9</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sheet 4 -->
+        <div class="sheet-card">
+            <div class="sheet-thumb"><img src="preview1.png"></div>
+            <div class="sheet-body">
+                <span class="sheet-tag">OS</span>
+                <h3>สรุป Operating System</h3>
+                <div class="sheet-meta">
+                    <span>👁 860</span>
+                    <span>⭐ 4.5</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sheet 5 -->
+        <div class="sheet-card">
+            <div class="sheet-thumb"><img src="preview2.png"></div>
+            <div class="sheet-body">
+                <span class="sheet-tag">WEB</span>
+                <h3>Web Programming เบื้องต้น</h3>
+                <div class="sheet-meta">
+                    <span>👁 1.5k</span>
+                    <span>⭐ 4.7</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sheet 6 -->
+        <div class="sheet-card">
+            <div class="sheet-thumb"><img src="preview3.png"></div>
+            <div class="sheet-body">
+                <span class="sheet-tag">DB</span>
+                <h3>Database Concept + SQL</h3>
+                <div class="sheet-meta">
+                    <span>👁 1.9k</span>
+                    <span>⭐ 4.8</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    <section class="professor-section">
+        <h2 class="professor-title">อาจารย์คณะวิทยาศาสตร์และเทคโนโลยี</h2>
+        <div class="professor-scroll" id="professorScroll"></div>
+    </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabaseClient = supabase.createClient(
+    'https://ctfrqwehpvpldtiojedb.supabase.co',
+    'sb_publishable_YHDQnG7VsNgb4O4i6MPN5g_lgU5eOGI'
+);
+
+const scroll = document.getElementById("professorScroll");
+
+async function loadProfessor() {
+    const { data } = await supabaseClient
+        .from("Professor")
+        .select("idprofessor, name, surname, img_professor");
+
+    scroll.innerHTML = "";
+    data.forEach(p => {
+        scroll.innerHTML += `
+        <a href="Allearn_professor.html?id=${p.idprofessor}" style="text-decoration:none;color:inherit;">
+            <div class="professor-card">
+                <img src="${p.img_professor || 'img/professor-default.jpg'}">
+                <h3>${p.name} ${p.surname}</h3>
+            </div>
+        </a>`;
+    });
+}
+
+loadProfessor();
+</script>
+
+<footer class="footer">
+    <h2>ติดต่อเรา</h2>
+    <p>
+        คณะวิทยาศาสตร์และเทคโนโลยี<br>
+        มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร (ศูนย์พระนครเหนือ)<br><br>
+
+        เลขที่ 1381 ถนนประชาราษฎร์ 1 แขวงวงศ์สว่าง เขตบางซื่อ กรุงเทพฯ 10800<br><br>
+
+        โทรศัพท์ : 02-836-3000 ต่อ 4194, 4155<br>
+    </p>
+</footer>
+
+</body>
+</html>
