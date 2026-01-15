@@ -2,135 +2,198 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>All Learn - Right Menu</title>
+<title>ชีทตามชั้นปี | Allearn</title>
+
+<link rel="stylesheet" href="Allearn_header.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-    /* ================= THEME CSS ================= */
-    :root {
-        --bg-color: #f5f7fa; 
-        --primary-blue: #456E94; /* สีน้ำเงินโทนเดียวกับหน้า Upload */
-        --active-blue: #60a5fa;  /* สีตอนกดเลือก */
-        --text-dark: #333;
-        --border-color: #ddd;
-    }
+body{
+  font-family:'Kanit',sans-serif;
+  background:#f5f7fa;
+  margin:0;
+  background-image:linear-gradient(#e0e7ef 1px,transparent 1px);
+  background-size:100% 40px;
+}
 
-    body {
-        font-family: 'Kanit', sans-serif;
-        margin: 0; padding: 0;
-        background-color: var(--bg-color);
-        /* ลายพื้นหลังจางๆ ให้ดูมีดีเทล */
-        background-image: linear-gradient(#e0e7ef 1px, transparent 1px);
-        background-size: 100% 40px;
-    }
+/* ===== TITLE ===== */
+.page-title{
+  max-width:1100px;
+  margin:50px auto 20px;
+  padding:40px;
+  background:white;
+  border-radius:30px;
+  box-shadow:0 10px 30px rgba(0,0,0,.05);
+}
 
-    /* ================= RIGHT ALIGNED MENU BAR ================= */
-    .menu-bar-container {
-        background-color: rgba(255, 255, 255, 0.9); /* พื้นหลังขาวโปร่งแสงนิดๆ */
-        backdrop-filter: blur(10px);
-        padding: 15px 40px;
-        border-bottom: 1px solid var(--border-color);
-        position: sticky; top: 0; z-index: 100;
-        
-        /* Flexbox เพื่อจัดชิดขวา */
-        display: flex;
-        justify-content: flex-end; /* ดันทุกอย่างไปขวาสุด */
-        align-items: center;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    }
+.page-title h1{
+  margin:0 0 8px;
+  color:#456E94;
+}
 
-    /* กลุ่มปุ่มเมนู */
-    .menu-group {
-        display: flex; gap: 10px;
-        overflow-x: auto; /* เผื่อจอเล็กเกินก็เลื่อนได้ */
-        scrollbar-width: none;
-    }
-    .menu-group::-webkit-scrollbar { display: none; }
+.page-title p{
+  margin:0;
+  color:#777;
+}
 
-    /* ดีไซน์ปุ่ม */
-    .menu-btn {
-        display: inline-block;
-        padding: 8px 25px;
-        border-radius: 20px; /* ทรงแคปซูลมนๆ */
-        border: 2px solid transparent;
-        background-color: transparent;
-        color: #888;
-        font-size: 1rem; font-weight: 500;
-        cursor: pointer; text-decoration: none;
-        transition: all 0.2s ease;
-    }
+/* ===== FILE AREA ===== */
+.file-area{
+  max-width:1100px;
+  margin:0 auto 80px;
+  padding:0 80px;
+}
 
-    .menu-btn:hover {
-        color: var(--primary-blue);
-        background-color: #f0f9ff;
-    }
+.file-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:30px 0 18px;
+}
 
-    /* ปุ่มที่ถูกเลือก (Active) */
-    .menu-btn.active {
-        background-color: var(--active-blue);
-        color: #fff;
-        box-shadow: 0 4px 10px rgba(96, 165, 250, 0.3);
-    }
+.file-label{
+  padding:8px 20px;
+  border-radius:20px;
+  color:white;
+  background:#4b56c0;
+}
 
-    /* ================= CONTENT AREA ================= */
-    .content-area {
-        padding: 50px 20px;
-        display: flex; justify-content: center; align-items: flex-start;
-        min-height: 80vh;
-    }
+.file-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:26px;
+}
 
-    .status-text {
-        text-align: center; color: #888;
-        background: #fff; padding: 40px; border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    }
+.file-card{
+  background:white;
+  border-radius:18px;
+  padding:10px;
+  box-shadow:0 6px 18px rgba(0,0,0,.12);
+  text-decoration:none;
+  color:#000;
+  transition:.2s ease;
+}
 
-    /* Responsive: จอเล็กให้จัดกลางแทน */
-    @media (max-width: 600px) {
-        .menu-bar-container { justify-content: center; padding: 15px 20px; }
-    }
+.file-card:hover{
+  transform:translateY(-6px);
+}
 
+.file-card img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  border-radius:12px;
+}
+
+.file-card p{
+  margin:10px 0 0;
+  font-size:13px;
+  text-align:center;
+}
 </style>
 </head>
+
 <body>
 
-    <div class="menu-bar-container">
-        <div class="menu-group">
-            <a href="#" class="menu-btn active" onclick="selectFilter('all', this)">ทั้งหมด</a>
-            <a href="#" class="menu-btn" onclick="selectFilter('y1', this)">ชั้นปีที่ 1</a>
-            <a href="#" class="menu-btn" onclick="selectFilter('y2', this)">ชั้นปีที่ 2</a>
-            <a href="#" class="menu-btn" onclick="selectFilter('y3', this)">ชั้นปีที่ 3</a>
-            <a href="#" class="menu-btn" onclick="selectFilter('y4', this)">ชั้นปีที่ 4</a>
-        </div>
-    </div>
+<div id="header"></div>
 
-    <div class="content-area">
-        <div class="status-text">
-            <h1 id="page-title" style="color:var(--primary-blue); margin:0 0 10px 0;">รวมชีทสรุปทั้งหมด</h1>
-            <p>เลือกชั้นปีจากมุมขวาบนเพื่อกรองเนื้อหา</p>
-        </div>
-    </div>
+<section class="page-title">
+  <h1 id="yearTitle">กำลังโหลด…</h1>
+  <p id="yearSubtitle"></p>
+</section>
 
-    <script>
-        function selectFilter(year, element) {
-            // 1. ลบคลาส active จากปุ่มเดิม
-            document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
-            
-            // 2. ใส่คลาส active ให้ปุ่มใหม่
-            element.classList.add('active');
+<div class="file-area">
+  <div class="file-header"></div>
 
-            // 3. เปลี่ยนข้อความ (จำลองการทำงาน)
-            const title = document.getElementById('page-title');
-            if(year === 'all') title.textContent = "รวมชีทสรุปทั้งหมด";
-            else if(year === 'y1') title.textContent = "🐣 เนื้อหา ชั้นปีที่ 1";
-            else if(year === 'y2') title.textContent = "🐢 เนื้อหา ชั้นปีที่ 2";
-            else if(year === 'y3') title.textContent = "🐯 เนื้อหา ชั้นปีที่ 3";
-            else if(year === 'y4') title.textContent = "🦁 เนื้อหา ชั้นปีที่ 4";
-        }
-    </script>
+  <div class="file-grid" id="sheetGrid"></div>
+</div>
+
+<script>
+// ===== LOAD HEADER =====
+fetch("Allearn_header.html")
+  .then(r=>r.text())
+  .then(t=>document.getElementById("header").innerHTML=t)
+
+// ===== SUPABASE =====
+const supabaseClient = supabase.createClient(
+  "https://ctfrqwehpvpldtiojedb.supabase.co",
+  "sb_publishable_YHDQnG7VsNgb4O4i6MPN5g_lgU5eOGI"
+)
+
+// ===== GET YEAR =====
+const params = new URLSearchParams(window.location.search)
+const IDYEAR = params.get("idyear")
+
+const yearMap = {
+  Y01:"ชั้นปีที่ 1",
+  Y02:"ชั้นปีที่ 2",
+  Y03:"ชั้นปีที่ 3",
+  Y04:"ชั้นปีที่ 4"
+}
+
+const titleEl = document.getElementById("yearTitle")
+const subEl   = document.getElementById("yearSubtitle")
+const grid    = document.getElementById("sheetGrid")
+
+if(!IDYEAR){
+  titleEl.textContent = "ไม่พบชั้นปี"
+  throw new Error("no idyear")
+}
+
+titleEl.textContent = yearMap[IDYEAR]
+subEl.textContent   = "รวมชีทจากทุกวิชาในชั้นปีนี้"
+
+// ===== LOAD SHEET BY SUBJECT =====
+async function loadSheets(){
+
+  // 1️⃣ ดึงวิชาในปีนี้
+  const { data: subjects, error: subErr } = await supabaseClient
+    .from("Subject")
+    .select("idsubject")
+    .eq("idyear", IDYEAR)
+
+  if(subErr || subjects.length === 0){
+    grid.innerHTML = "<p>ไม่พบวิชาในชั้นปีนี้</p>"
+    return
+  }
+
+  const subjectIds = subjects.map(s => s.idsubject)
+
+  const { data: sheets, error: sheetErr } = await supabaseClient
+    .from("Sheet")
+    .select("idsheet, sheet_name")
+    .in("idsubject", subjectIds)
+    .order("idsheet", { ascending:false })
+
+  if(sheetErr){
+    console.error(sheetErr)
+    grid.innerHTML = "<p>เกิดข้อผิดพลาด</p>"
+    return
+  }
+
+  if(sheets.length === 0){
+    grid.innerHTML = "<p style='color:#888'>ยังไม่มีชีทในชั้นปีนี้</p>"
+    return
+  }
+
+  grid.innerHTML = ""
+
+  sheets.forEach(s=>{
+    const card = document.createElement("a")
+    card.className = "file-card"
+    card.href = `Allearn_content.html?idsheet=${s.idsheet}`
+    card.innerHTML = `
+      <img src="Exsheet.png">
+      <p>${s.sheet_name}</p>
+    `
+    grid.appendChild(card)
+  })
+}
+
+loadSheets()
+</script>
 
 </body>
 </html>

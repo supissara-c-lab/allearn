@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Allearn | Sheets</title>
+
+    <link rel="stylesheet" href="Allearn_header.css">
+    <link rel="stylesheet" href="Allearn_sheet.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="header"></div>
+<script>
+fetch("Allearn_header.html")
+.then(res => res.text())
+.then(data => document.getElementById("header").innerHTML = data)
+</script>
+
+<h2 class="section-title">ชีทยอดนิยม</h2>
+
+<section class="sheet-section">
+    <div class="sheet-grid" id="sheetGrid"></div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabaseClient = supabase.createClient(
+    'https://ctfrqwehpvpldtiojedb.supabase.co',
+    'sb_publishable_YHDQnG7VsNgb4O4i6MPN5g_lgU5eOGI'
+);
+
+const grid = document.getElementById("sheetGrid");
+
+async function loadLatestSheets(){
+  const { data, error } = await supabaseClient
+    .from("Sheet")
+    .select(`
+      idsheet,
+      sheet_name,
+      Subject (
+        subject_name
+      )
+    `)
+    .order("idsheet", { ascending:false });
+
+  if(error){
+    console.error(error);
+    grid.innerHTML = "<p>โหลดชีทไม่สำเร็จ</p>";
+    return;
+  }
+
+  grid.innerHTML = "";
+
+  data.forEach(s=>{
+    const card = document.createElement("a");
+    card.className = "sheet-card";
+    card.href = `Allearn_content.html?idsheet=${s.idsheet}`;
+    card.innerHTML = `
+      <div class="sheet-thumb">
+        <img src="Exsheet.png">
+      </div>
+      <div class="sheet-body">
+        <span class="sheet-tag">${s.Subject?.subject_name || "ไม่ระบุวิชา"}</span>
+        <h3>${s.sheet_name}</h3>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+loadLatestSheets();
+</script>
+
+</body>
+</html>

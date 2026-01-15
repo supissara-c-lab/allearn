@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Admin Dashboard</title>
+
+<style>
+:root{
+  --primary:#4f7ea3;
+  --bg:#f1f5f9;
+  --danger:#dc2626;
+}
+
+body{
+  margin:0;
+  font-family:'Kanit',sans-serif;
+  background:var(--bg);
+}
+
+header{
+  background:var(--primary);
+  color:white;
+  padding:20px 30px;
+  font-size:22px;
+  font-weight:600;
+}
+
+.container{
+  padding:30px;
+  max-width:1200px;
+  margin:auto;
+}
+
+/* ===== DASHBOARD ===== */
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  margin-bottom:30px;
+}
+
+.stat-card{
+  background:white;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
+  text-align:center;
+}
+
+.stat-card h2{
+  margin:0;
+  font-size:34px;
+  color:var(--primary);
+}
+
+.stat-card p{
+  margin-top:6px;
+  color:#555;
+}
+
+/* ===== TABLE ===== */
+.card{
+  background:white;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:14px;
+  border-bottom:1px solid #e5e7eb;
+  text-align:center;
+}
+
+th{
+  background:#f8fafc;
+}
+
+.btn-delete{
+  background:var(--danger);
+  color:white;
+  border:none;
+  padding:6px 14px;
+  border-radius:999px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>Admin Dashboard</header>
+
+<div class="container">
+
+<section class="dashboard">
+  <div class="stat-card">
+    <h2 id="totalUsers">0</h2>
+    <p>ผู้ใช้ทั้งหมด</p>
+  </div>
+  <div class="stat-card">
+    <h2 id="totalSheets">0</h2>
+    <p>ไฟล์ชีททั้งหมด</p>
+  </div>
+  <div class="stat-card">
+    <h2 id="monthSheets">0</h2>
+    <p>อัปโหลดเดือนนี้</p>
+  </div>
+</section>
+
+<div class="card">
+<table>
+<thead>
+<tr>
+  <th>Sheet name</th>
+  <th>Owner</th>
+  <th>Subject</th>
+  <th>Year</th>
+  <th>Action</th>
+</tr>
+</thead>
+<tbody id="sheetTable"></tbody>
+</table>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabase = window.supabase.createClient(
+  "https://ctfrqwehpvpldtiojedb.supabase.co",
+  "sb_publishable_YHDQnG7VsNgb4O4i6MPN5g_lgU5eOGI"
+)
+
+/* ===== LOAD DASHBOARD ===== */
+async function loadDashboard(){
+  const { count: userCount } = await supabase
+    .from("Account")
+    .select("*", { count:"exact", head:true })
+
+  const { count: sheetCount } = await supabase
+    .from("Sheet")
+    .select("*", { count:"exact", head:true })
+
+  const firstDay = new Date()
+  firstDay.setDate(1)
+  firstDay.setHours(0,0,0,0)
+
+  const { count: monthCount } = await supabase
+    .from("Sheet")
+    .select("*", { count:"exact", head:true })
+    .gte("created_at", firstDay.toISOString())
+
+  document.getElementById("totalUsers").innerText = userCount || 0
+  document.getElementById("totalSheets").innerText = sheetCount || 0
+  document.getElementById("monthSheets").innerText = monthCount || 0
+}
+
+/* ===== LOAD TABLE ===== */
+async function loadSheets(){
+  const { data, error } = await supabase
+    .from("Sheet")
+    .select(`
+      idsheet,
+      sheet_name,
+      Account ( name, surname ),
+      Subject (
+        subject_name,
+        Year ( year )
+      )
+    `)
+    .order("sheet_name")
+
+  if(error){
+    console.error(error)
+    return
+  }
+
+  const table = document.getElementById("sheetTable")
+  table.innerHTML = ""
+
+  data.forEach(s=>{
+    table.innerHTML += `
+    <tr>
+      <td>${s.sheet_name}</td>
+      <td>${s.Account?.name || ""} ${s.Account?.surname || ""}</td>
+      <td>${s.Subject?.subject_name || "-"}</td>
+      <td>${s.Subject?.Year?.year || "-"}</td>
+      <td>
+        <button class="btn-delete" onclick="deleteSheet('${s.idsheet}')">
+          ลบ
+        </button>
+      </td>
+    </tr>
+    `
+  })
+}
+
+/* ===== DELETE ===== */
+async function deleteSheet(id){
+  if(!confirm("ลบชีทนี้ใช่หรือไม่")) return
+
+  const { error } = await supabase
+    .from("Sheet")
+    .delete()
+    .eq("idsheet", id)
+
+  if(!error){
+    loadDashboard()
+    loadSheets()
+  }else{
+    alert("ลบไม่สำเร็จ")
+  }
+}
+
+loadDashboard()
+loadSheets()
+</script>
+
+</body>
+</html>

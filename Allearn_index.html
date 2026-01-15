@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <link rel="stylesheet" href="Allearn_header.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <title>Allearn - รวมกันเรียนรู้</title>
+
+    <style>
+        .blue{ background:#2f6bff; color:#fff }
+        .yellow{ background:#f7d046; color:#000 }
+        .babyblue{background:#b1e4eb; color:#000;}
+
+        body{
+            background:#f5f7fa;
+            background-image: linear-gradient(#e0e7ef 1px, transparent 1px);
+            background-size: 100% 40px;
+        }
+
+
+        /* ===== HERO ===== */
+        .hero {
+            display: flex;
+            padding: 80px 40px;
+            justify-content: center;
+            align-items: center;
+            max-width: 1200px;
+            margin: auto;
+            gap: 50px;
+        }
+
+        .hero-content-box {
+            background-color: #fff9e6;
+            padding: 50px;
+            border-radius: 40px;
+            width: 50%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .hero-content-box h1 {
+            font-size: 42px;
+            color: #1f3c88;
+        }
+
+        .hero-content-box p {
+            font-size: 18px;
+            color: #4a7599;
+        }
+
+        .hero-img-only {
+            width: 40%;
+        }
+
+        .hero-img-only img {
+            width: 100%;
+            border-radius: 30px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+        }
+
+        .btn-yellow {
+            display: inline-block;
+            padding: 15px 35px;
+            background: #ffeb3b;
+            border-radius: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+
+        /* ===== MENU ===== */
+        .menu-container {
+            display: flex;
+            justify-content: center;
+            margin-top: -30px;
+            margin-bottom: 100px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .menu {
+            display: flex;
+            background: #4a7599;
+            padding: 14px 40px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        }
+
+        .menu span {
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== WHITE CONTENT ===== */
+        .content-white {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 100px 20px 60px;
+            border-radius: 60px 60px 0 0;
+        }
+
+        .professor-section {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .professor-title {
+            text-align: center;
+            color: #1f3c88;
+            
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .professor-scroll {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 10px;
+        }
+
+        .professor-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .professor-card {
+            min-width: 220px;
+            background: white;
+            border-radius: 25px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .professor-card img {
+            width: 100%;
+            border-radius: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+            .hero-content-box,
+            .hero-img-only {
+                width: 100%;
+            }
+        }
+
+        .footer {
+    background: #000000;
+    color: #fff;
+    padding: 60px 40px;
+}
+
+.footer h2 {
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+.footer p {
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+/* ===== SHEET SECTION ===== */
+.sheet-section{
+  max-width:1200px;
+  margin:auto;
+}
+
+.section-title{
+  text-align:center;
+  color:#1f3c88;
+  font-size:28px;
+  margin-bottom:40px;
+}
+
+.sheet-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+}
+
+.sheet-card{
+  background:white;
+  border-radius:22px;
+  box-shadow:0 8px 22px rgba(0,0,0,.08);
+  overflow:hidden;
+  text-decoration:none;
+  color:#000;
+  transition:.25s;
+}
+
+.sheet-card:hover{
+  transform:translateY(-6px);
+}
+
+.sheet-thumb{
+  height:170px;
+  background:#e6ecf5;
+}
+
+.sheet-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.sheet-body{
+  padding:16px;
+}
+
+.sheet-tag{
+  display:inline-block;
+  background:#f7d046;
+  color:#000;
+  padding:4px 14px;
+  border-radius:999px;
+  font-size:12px;
+  margin-bottom:8px;
+}
+
+.sheet-body h3{
+  font-size:16px;
+  margin:0;
+  color:#1f3c88;
+}
+
+    </style>
+</head>
+
+<body>
+
+<div id="header"></div>
+<script>
+fetch("Allearn_header.html")
+.then(res => res.text())
+.then(data => document.getElementById("header").innerHTML = data)
+</script>
+
+<p id="sessionDebug" style="text-align:center;color:#2f6bff;font-weight:600;"></p>
+
+<section class="hero">
+    <div class="hero-content-box">
+        <h1>เพื่อนยามยากที่จะพาเราเรียนเข้าใจทุกบทเรียน</h1>
+        <p>
+            แหล่งรวมชีทสรุปสำหรับวิชาต่าง ๆ ภายในคณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร สำหรับการติวสอบและการทบทวนในรายวิชานั้น ๆ
+        </p>
+        <a href="Allearn_login.html" class="btn-yellow">ยังไม่มีบัญชีใช่หรือไม่</a>
+    </div>
+    <div class="hero-img-only">
+        <img src="pepstudy.jpg">
+    </div>
+</section>
+
+<div class="content-white">
+<h2 class="professor-title">ชีทยอดนิยมคณะวิทยาศาสตร์และเทคโนโลยี</h2>
+
+  <section class="sheet-section">
+    <div class="sheet-grid" id="sheetGrid"></div>
+  </section>
+
+
+</section>
+
+    <section class="professor-section">
+        <h2 class="professor-title"><br>อาจารย์คณะวิทยาศาสตร์และเทคโนโลยี</h2>
+        <div class="professor-scroll" id="professorScroll"></div>
+    </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabaseClient = supabase.createClient(
+    'https://ctfrqwehpvpldtiojedb.supabase.co',
+    'sb_publishable_YHDQnG7VsNgb4O4i6MPN5g_lgU5eOGI'
+);
+
+const grid = document.getElementById("sheetGrid")
+
+async function loadLatestSheets(){
+  const { data, error } = await supabaseClient
+    .from("Sheet")
+    .select(`
+      idsheet,
+      sheet_name,
+      Subject (
+        subject_name
+      )
+    `)
+    .order("idsheet", { ascending:false })
+    .limit(6)
+
+  if(error){
+    console.error(error)
+    grid.innerHTML = "<p>โหลดชีทไม่สำเร็จ</p>"
+    return
+  }
+
+  grid.innerHTML = ""
+
+  data.forEach(s=>{
+    const card = document.createElement("a")
+    card.className = "sheet-card"
+    card.href = `Allearn_content.html?idsheet=${s.idsheet}`
+    card.innerHTML = `
+      <div class="sheet-thumb">
+        <img src="Exsheet.png">
+      </div>
+      <div class="sheet-body">
+        <span class="sheet-tag">${s.Subject?.subject_name || "ไม่ระบุวิชา"}</span>
+        <h3>${s.sheet_name}</h3>
+      </div>
+    `
+    grid.appendChild(card)
+  })
+}
+
+loadLatestSheets()
+
+const scroll = document.getElementById("professorScroll");
+
+async function loadProfessor() {
+    const { data } = await supabaseClient
+        .from("Professor")
+        .select("idprofessor, name, surname, img_professor");
+
+    scroll.innerHTML = "";
+    data.forEach(p => {
+        scroll.innerHTML += `
+        <a href="Allearn_professor.html?id=${p.idprofessor}" style="text-decoration:none;color:inherit;">
+            <div class="professor-card">
+                <img src="${p.img_professor || 'img/professor-default.jpg'}">
+                <h3>${p.name} ${p.surname}</h3>
+            </div>
+        </a>`;
+    });
+}
+
+loadProfessor();
+</script>
+
+<footer class="footer">
+    <h2>ติดต่อเรา</h2>
+    <p>
+        คณะวิทยาศาสตร์และเทคโนโลยี<br>
+        มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร (ศูนย์พระนครเหนือ)<br><br>
+
+        เลขที่ 1381 ถนนประชาราษฎร์ 1 แขวงวงศ์สว่าง เขตบางซื่อ กรุงเทพฯ 10800<br><br>
+
+        โทรศัพท์ : 02-836-3000 ต่อ 4194, 4155<br>
+    </p>
+</footer>
+
+<script type="module">
+const idacc = sessionStorage.getItem("idacc")
+
+/* ===== ECHO SESSION ===== */
+document.getElementById("sessionDebug").innerText =
+    idacc ? `SESSION idacc = ${idacc}` : "ยังไม่มี SESSION"
+
+/* ===== LOGIN CHECK ===== */
+if (idacc) {
+    const btn = document.querySelector(".btn-yellow")
+    const welcome = document.getElementById("welcomeName")
+
+    if (btn) btn.style.display = "none"
+    welcome.style.display = "block"
+
+    const { data, error } = await supabaseClient
+        .from("Account")
+        .select("name")
+        .eq("idacc", idacc)
+        .single()
+
+    if (!error && data) {
+        welcome.innerText = `สวัสดี ${data.name}`
+    } else {
+        welcome.innerText = "สวัสดี"
+    }
+}
+</script>
+
+</body>
+</html>

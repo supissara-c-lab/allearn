@@ -6,12 +6,14 @@
 
 <link rel="stylesheet" href="Allearn_header.css">
 <link rel="stylesheet" href="Allearn_speech.css">
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body{
-  font-family:"Prompt", sans-serif;
+  font-family: 'Kanit', sans-serif;
   background:#f5f7fa;
   margin:0;
 }
@@ -53,23 +55,8 @@ body{
 .info{
   display:flex;
   flex-direction:column;
-  gap:14px;
+  gap:12px;
 }
-
-.tag-row{
-  display:flex;
-  gap:10px;
-  margin-top:8px;
-}
-
-.tag{
-  padding:8px 18px;
-  border-radius:999px;
-  font-size:14px;
-}
-
-.blue{ background:#2f6bff; color:#fff; }
-.yellow{ background:#f7d046; color:#000; }
 
 /* ===== FILE ===== */
 .file-area{
@@ -78,26 +65,51 @@ body{
   padding:0 80px;
 }
 
-.file-label{
+/* label + button */
+.file-header{
   display:flex;
+  justify-content:space-between;
   align-items:center;
-  gap:15px;
   margin:30px 0 18px;
 }
 
-.file-label span{
+.file-label{
+  display:inline-block;
   padding:8px 20px;
   border-radius:20px;
   color:white;
-  background:#4b56c0;
 }
+
+.blue-bg{ background:#4b56c0; }
+.blue{ background:#2f6bff; color:#fff }
+.yellow{ background:#f7d046; color:#000 }
+.babyblue{background:#b1e4eb; color:#000;}
 
 .upload-btn{
   padding:8px 22px;
   border-radius:20px;
-  border:none;
-  background:#ddd;
-  cursor:pointer;
+  background: #fbbf24;
+  color:#fff;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:500;
+}
+
+.upload-btn:hover{
+  opacity:0.9;
+}
+
+.tag-row{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+.tag{
+  padding:6px 16px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:500;
 }
 
 .file-grid{
@@ -114,6 +126,19 @@ body{
   text-decoration:none;
   color:#000;
 }
+
+.file-card img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  border-radius:12px;
+}
+
+.file-card p{
+  margin:10px 0 0;
+  font-size:13px;
+  text-align:center;
+}
 </style>
 </head>
 
@@ -124,104 +149,127 @@ body{
 <section class="profile-detail">
 
   <div class="profile-left">
-    <img src="P01.jpg">
-    <button class="logout-btn">Log out</button>
+    <img src="Exprofile.png">
+    <button class="logout-btn" onclick="logout()">Log out</button>
   </div>
 
   <div class="info">
+
     <div id="speechBox"></div>
+    <p id="sessionEcho" style="text-align:center;color:#2f6bff;font-weight:600;"></p>
+    <div class="tag-row">
+      <div class="tag blue" id="majorTag">กำลังโหลด...</div>
+      <div class="tag babyblue" id="yearTag">กำลังโหลด...</div>
+    </div>
 
     <strong>ชีทที่เพิ่มโดยฉัน</strong>
     <p id="sheetCount">0</p>
+
+    <a href="Allearn_admin.html" class="upload-btn">ADMIN</a>
   </div>
 
 </section>
 
 <div class="file-area">
-  <div class="file-label">
-    <span>ชีทที่เพิ่มโดยฉัน</span>
-    <a href="Allearn_uploadui.html">
-      <button class="upload-btn">Upload</button>
-    </a>
+
+  <div class="file-header">
+    <div class="file-label blue-bg">ชีทที่เพิ่มโดยฉัน</div>
+    <a href="Allearn_uploadui.html" class="upload-btn">+ เพิ่มชีท</a>
   </div>
 
   <div class="file-grid" id="mySheetGrid"></div>
 </div>
 
 <script>
-/* ===== HEADER ===== */
+// ===== LOAD HEADER =====
 fetch("Allearn_header.html")
-  .then(r=>r.text())
-  .then(t=>document.getElementById("header").innerHTML=t)
+  .then(r => r.text())
+  .then(t => document.getElementById("header").innerHTML = t)
 
-/* ===== SUPABASE ===== */
+// ===== SUPABASE =====
 const supabaseClient = supabase.createClient(
   "https://ctfrqwehpvpldtiojedb.supabase.co",
   "sb_publishable_YHDQnG7VsNgb4O4i6MPN5g_lgU5eOGI"
 )
 
-const IDACC = "f2327b71-2cc2-45ac-9394-f4a8484dde89"
+// ===== SESSION =====
+const IDACC = sessionStorage.getItem("idacc")
+document.getElementById("sessionEcho").innerText =
+  IDACC ? `SESSION เข้าแล้ว → idacc = ${IDACC}` : "ยังไม่มี SESSION"
 
-/* ===== LOAD SPEECH FIRST ===== */
+if (!IDACC) {
+  alert("กรุณาเข้าสู่ระบบก่อน")
+  location.href = "Allearn_login.html"
+}
+
+// ===== ELEMENT =====
+const grid = document.getElementById("mySheetGrid")
+const sheetCount = document.getElementById("sheetCount")
+let userNameEl
+
+// ===== LOAD SPEECH + DATA =====
 fetch("Allearn_speech-profile.html")
-  .then(r=>r.text())
-  .then(t=>{
+  .then(r => r.text())
+  .then(t => {
     document.getElementById("speechBox").innerHTML = t
+    userNameEl = document.getElementById("userName")
     loadUser()
     loadMySheets()
   })
 
-/* ===== LOAD USER ===== */
+// ===== LOAD USER =====
 async function loadUser(){
-  const userNameEl = document.getElementById("userName")
-  const eduTagsEl = document.getElementById("eduTags")
-
-  if(!userNameEl || !eduTagsEl) return
-
   const { data, error } = await supabaseClient
     .from("Account")
-    .select(`
-      name,
-      surname,
-      year,
-      Major ( major_name )
-    `)
+    .select("name, surname, idmajor, idyear")
     .eq("idacc", IDACC)
     .single()
+    
 
-  if(error){
+  if (error) {
     console.error(error)
     return
   }
 
   userNameEl.textContent = `${data.name} ${data.surname}`
 
-  eduTagsEl.innerHTML = `
-    <span class="tag blue">${data.Major?.major_name || "-"}</span>
-    <span class="tag yellow">ชั้นปีที่ ${data.year || "-"}</span>
-  `
+  document.getElementById("majorTag").textContent =
+    data.idmajor || "ไม่ระบุสาขา"
+
+  document.getElementById("yearTag").textContent =
+    data.idyear || "ไม่ระบุชั้นปี"
 }
 
-/* ===== LOAD SHEETS ===== */
-async function loadMySheets(){
-  const grid = document.getElementById("mySheetGrid")
-  const sheetCount = document.getElementById("sheetCount")
 
-  const { data } = await supabaseClient
+// ===== LOAD SHEETS =====
+async function loadMySheets(){
+  const { data, error } = await supabaseClient
     .from("Sheet")
     .select("idsheet, sheet_name")
     .eq("idacc", IDACC)
+    .order("idsheet", { ascending:false })
+
+  if (error) return console.error(error)
 
   sheetCount.textContent = data.length
   grid.innerHTML = ""
 
-  data.forEach(s=>{
-    grid.innerHTML += `
-      <a class="file-card" href="Allearn_content.html?idsheet=${s.idsheet}">
-        <p>${s.sheet_name}</p>
-      </a>
+  data.forEach(s => {
+    const card = document.createElement("a")
+    card.className = "file-card"
+    card.href = `Allearn_content.html?idsheet=${s.idsheet}`
+    card.innerHTML = `
+      <img src="Exsheet.png">
+      <p>${s.sheet_name}</p>
     `
+    grid.appendChild(card)
   })
+}
+
+// ===== LOGOUT =====
+function logout(){
+  sessionStorage.clear()
+  location.href = "Allearn_login.html"
 }
 </script>
 
